@@ -30,8 +30,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RestController
-@Api(tags = "Review")
-@RequestMapping("/reviews")
+@Api(tags = "SightSeeing")
+@RequestMapping("/sightseeings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SightSeeingController {
@@ -45,8 +45,8 @@ public class SightSeeingController {
 
 	    @PatchMapping
 	    @ApiOperation(value = "Update sightSeeing", nickname = "updateSightSeeing", notes = "Update sightSeeing")
-	    public ResponseEntity<SightSeeingUpdateResponse> updateSightSeeing(@Valid @RequestBody final SightSeeingUpdateRequest reviewUpdateRequest) {
-	        return ResponseEntity.ok(sightSeeingFacade.updateSightSeeing(reviewUpdateRequest));
+	    public ResponseEntity<SightSeeingUpdateResponse> updateSightSeeing(@Valid @RequestBody final SightSeeingUpdateRequest sightSeeingUpdateRequest) {
+	        return ResponseEntity.ok(sightSeeingFacade.updateSightSeeing(sightSeeingUpdateRequest));
 	    }
 
 	    @GetMapping

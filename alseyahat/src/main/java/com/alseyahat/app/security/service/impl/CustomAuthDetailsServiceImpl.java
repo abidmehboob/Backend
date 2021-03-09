@@ -47,7 +47,7 @@ public class CustomAuthDetailsServiceImpl implements CustomAuthDetailsService {
         }
         final Optional<Employee> employee = employeeRepository.findOne(QEmployee.employee.email.eq(username).or(QEmployee.employee.phone.eq(username)));
 		if (employee.isPresent()) {
-			final Employee updateSecurityKey = employee.get();
+			Employee updateSecurityKey = employee.get();
 			updateSecurityKey.setSecurityKey(UUID.randomUUID().toString().replace("-", ""));
 			updateSecurityKey.setAesKey(UUID.randomUUID().toString().replace("-", ""));
             employeeRepository.save(updateSecurityKey); 

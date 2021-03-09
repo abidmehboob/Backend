@@ -36,10 +36,7 @@ public class SightSeeing implements Serializable  {
 	    String description;
 
 	    @Column
-	    String logo;
-
-	    @Column
-	    String backgroundImage;
+	    String images;
 
 	    @Column
 	    boolean isEnabled = true;
@@ -52,6 +49,9 @@ public class SightSeeing implements Serializable  {
 	    
 	    @Column
 	    String city;
+	    
+	    @Column
+	    String district;
 
 	    @Column
 	    String town;
@@ -64,6 +64,18 @@ public class SightSeeing implements Serializable  {
 
 	    @Column
 	    Double longitude;
+	    
+	    @Column
+	    Double sightAverageRating=3.0;
+	    
+	    @Column
+	    boolean hotSight =  Boolean.FALSE;
+
+	    @Column
+	    boolean newArrival =  Boolean.FALSE;
+
+	    @Column
+	    boolean advertised = Boolean.FALSE;
 	    
 	    @OneToMany(mappedBy = "sightSeeing", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Review.class)
 	    List<Review> review;

@@ -7,7 +7,6 @@ import com.alseyahat.app.feature.hotel.dto.HotelCreateResponse;
 import com.alseyahat.app.feature.hotel.dto.HotelDetailResponse;
 import com.alseyahat.app.feature.hotel.dto.HotelUpdateRequest;
 import com.alseyahat.app.feature.hotel.dto.HotelUpdateResponse;
-import com.alseyahat.app.feature.hotel.repository.entity.Hotel;
 import com.querydsl.core.types.Predicate;
 
 public interface HotelFacade {

@@ -10,6 +10,9 @@ import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +41,11 @@ public class CustomerServiceImpl implements CustomerService {
         entity.setPassword(encoder.encode(entity.getPhone()));
         return customerRepository.save(entity);
     }
+    
+    @Override
+    public Optional<Customer> find_One(final Predicate predicate) {
+        return customerRepository.findOne(predicate);
+    }
 
     @Override
     public boolean exist(final Predicate predicate) {
@@ -48,4 +56,10 @@ public class CustomerServiceImpl implements CustomerService {
     public Page<Customer> findAll(final Predicate predicate, final Pageable pageable) {
         return customerRepository.findAll(predicate, pageable);
     }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+	public Customer saveWithRollback(Customer customer) {
+		return customerRepository.save(customer);
+	}
 }

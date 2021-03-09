@@ -12,5 +12,20 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ReviewUpdateRequest {
-	String ReviewRatingId;
+	
+	String reviewRatingId;
+
+	String hotelId;
+
+	String sightSeeingId;
+
+	String dealId;
+
+	String reviewFor;
+
+	Integer rating;
+
+	String review;
+
+	String customerId;
 }

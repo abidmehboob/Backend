@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -18,16 +16,10 @@ public class CustomerLoginRequest {
 
     
     String name;
-
-    @Email
+  
     String email;
-
-    @NotEmpty
-    String fcmToken;
-
+   
     String deviceType;
-
-    String channelId;
 
     String deviceModel;
 
@@ -38,8 +30,7 @@ public class CustomerLoginRequest {
 
     String deviceId;
 
-    String deviceToken;
-    
+    @NotEmpty
     String personalKey;
 
 }

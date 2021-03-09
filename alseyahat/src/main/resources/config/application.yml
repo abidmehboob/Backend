@@ -5,17 +5,31 @@ spring:
     password: xFHeneCOoX
   jpa:
     show-sql: true
-    generate-ddl: true
+    generate-ddl: false
     hibernate:
-      ddl-auto: create
+#      ddl-auto: update
+      able_lazy_load_no_trans: true
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-      hibernate:
-        enable_lazy_load_no_trans: true
-        ddl-auto: update
-        event:
-          merge:
-            entity_copy_observer: allow
+      hibernate.jdbc.batch_size: 1000 
+      jdbc:
+        time_zone: UTC
+      event:
+        merge:
+          entity_copy_observer: allow
+#    properties:
+#       hibernate.jdbc.batch_size: 1000 
+#      hibernate:
+#        enable_lazy_load_no_trans: true
+#        ddl-auto: update
+#        jdbc:
+#        time_zone: UTC
+#      event:
+#        merge:
+#          entity_copy_observer: allow
+#        event:
+#          merge:
+#            entity_copy_observer: allow
   hikari:
     connection-timeout: 60000
     maximum-pool-size: 20
@@ -42,8 +56,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 2MB
-      max-request-size: 2MB
+      max-file-size: 100MB
+      max-request-size: 100MB
       
   redis:
     host: 3.15.218.126
@@ -69,7 +83,7 @@ logbook:
       - token
 
 server:
-  port: 8080
+  port: 8085
   session:
     tracking-modes: cookie
 
@@ -94,13 +108,29 @@ jwt:
     key-store-password: letmein
     key-pair-alias: mytestkey
     key-pair-password: changeme
-
- 
+feign:
+  client:
+    config:
+      AttachmentUploadFeignClient:
+        connectTimeout: 50000
+        readTimeout: 20000
 app:
   firebase-configuration-file: fcm/planckly-2a17b-firebase-adminsdk-0wkbo-2b71d75e7d.json
   firebase-database-url: https://planckly-2a17b.firebaseio.com
   ios-certificate-path: classpath:apns/Certificates.p12
   ios-password: admin123
+  
+attachment:
+  ip: 168.235.86.155
+  user-name: root
+  password: VnlJQlq1V0
+  access-url: http://168.235.86.155/ 
+  feign-url: http://168.235.86.155:8085
+  directory:
+    hotel-images: public_html/file_uploads/hotel_images
+    sight-seeing-images: public_html/file_uploads/sight_seeing_images
+    deal-images: public_html/file_uploads/deal_images
+    
 
 loggin:
   level:

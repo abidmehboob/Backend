@@ -1,30 +1,25 @@
 package com.alseyahat.app.security.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
-
 import com.alseyahat.app.feature.customer.repository.entity.Customer;
 import com.alseyahat.app.feature.employee.repository.entity.Employee;
-
+import com.alseyahat.app.feature.employee.repository.entity.QEmployeeRole;
+import com.alseyahat.app.feature.employee.service.EmployeeRoleService;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import static java.util.Optional.ofNullable;
-import java.util.ArrayList;
-//import static com.planckly.shopping.constant.RoleConstant.STORE_SUPER_ADMIN;
 
 @Deprecated
 public class AuthenticationTokenEnhancer extends JwtAccessTokenConverter {
 	
     ModelMapper modelMapper;
     
-//    @Autowired
-//    BranchService branchService;
+    @Autowired
+    EmployeeRoleService employeeRoleService;
 
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, final OAuth2Authentication authentication) {
@@ -37,7 +32,7 @@ public class AuthenticationTokenEnhancer extends JwtAccessTokenConverter {
             additionalInfo.put("security_aes_key", employee.getAesKey());
             additionalInfo.put("name", employee.getName());
             additionalInfo.put("email", employee.getEmail());
-//            additionalInfo.put("roles", buildRoleResponse(employee.getRoles()));
+            additionalInfo.put("roles", employeeRoleService.findOne(QEmployeeRole.employeeRole.roleId.eq(Long.valueOf(employee.getRoleId()))));
 //            additionalInfo.put("branches", employee.getBranches().stream().map(Branch::getBranchId).toArray());
         }
         if (authentication.getPrincipal() instanceof Customer) {

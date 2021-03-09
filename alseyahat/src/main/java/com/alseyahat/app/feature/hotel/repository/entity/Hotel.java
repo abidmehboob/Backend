@@ -1,5 +1,6 @@
 package com.alseyahat.app.feature.hotel.repository.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -24,10 +25,12 @@ import lombok.AccessLevel;
 @Entity
 @Table(name = "hotel")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Hotel {
+public class Hotel implements Serializable {
+
+    static final long serialVersionUID = -797991492884005122L;
 
     @Id
-    @Column(nullable = false)
+    @Column(name = "hotel_id", nullable = false)
     String hotelId = UUID.randomUUID().toString().replace("-", "");
     
     @Column(nullable = false)
@@ -46,16 +49,16 @@ public class Hotel {
     String registerFrom;
 
     @Column
-    String logo;
-
-    @Column
-    String backgroundImage;
-
+    String images;
+    
     @Column
     String accountNumber;
 
     @Column
-    String accountSortCode;
+    Long singleRoomCharges;
+    
+    @Column
+    Long doubleRoomCharges;
 
     @Column
     boolean isEnabled = true;
@@ -75,6 +78,9 @@ public class Hotel {
     
     @Column
     String city;
+    
+    @Column
+    String district;
 
     @Column
     String town;
@@ -88,8 +94,26 @@ public class Hotel {
     @Column
     Double longitude;
     
+    @Column
+    Double itemAverageRating=3.0;
+    
+    @Column
+    boolean hotHotel =  Boolean.FALSE;
+
+    @Column
+    boolean newArrival =  Boolean.FALSE;
+
+    @Column
+    boolean advertised = Boolean.FALSE;
+    
     @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Review.class)
     List<Review> review;
+    
+    @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = HotelFacility.class)
+    List<HotelFacility> hotelFacility;
+    
+    @OneToMany(mappedBy = "hotel", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Review.class)
+    List<HotelBooking> hotelBooking;
 
     @Column
     Date dateCreated;

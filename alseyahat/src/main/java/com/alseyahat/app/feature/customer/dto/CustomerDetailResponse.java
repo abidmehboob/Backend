@@ -27,6 +27,8 @@ public class CustomerDetailResponse {
     String deviceModel;
 
     String phone;
+    
+    String cnic;
 
     String deviceId;
 

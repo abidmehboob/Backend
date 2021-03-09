@@ -1,10 +1,13 @@
 package com.alseyahat.app.feature.sightSeeing.facade.impl;
 
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import com.alseyahat.app.feature.review.repository.entity.QReview;
+import com.alseyahat.app.feature.review.service.ReviewService;
 import com.alseyahat.app.feature.sightSeeing.dto.SightSeeingCreateRequest;
 import com.alseyahat.app.feature.sightSeeing.dto.SightSeeingCreateResponse;
 import com.alseyahat.app.feature.sightSeeing.dto.SightSeeingDetailResponse;
@@ -14,12 +17,14 @@ import com.alseyahat.app.feature.sightSeeing.facade.SightSeeingFacade;
 import com.alseyahat.app.feature.sightSeeing.repository.entity.QSightSeeing;
 import com.alseyahat.app.feature.sightSeeing.repository.entity.SightSeeing;
 import com.alseyahat.app.feature.sightSeeing.service.SightSeeingService;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import lombok.AccessLevel;
+import static com.alseyahat.app.commons.Constants.SEPARATOR;
 
 @Slf4j
 @Service
@@ -29,6 +34,7 @@ public class SightSeeingFacadeImpl implements SightSeeingFacade {
 
 	SightSeeingService sightSeeingService;
 	ModelMapper modelMapper;
+	ReviewService reviewService;
 	
 	@Override
 	public void deleteSightSeeing(String sightSeeingId) {
@@ -44,7 +50,7 @@ public class SightSeeingFacadeImpl implements SightSeeingFacade {
 
 	@Override
 	public SightSeeingDetailResponse findSightSeeingId(String sightSeeingId) {
-		SightSeeing sightSeeing = sightSeeingService.findOne(QSightSeeing.sightSeeing.sightSeeingId.eq(sightSeeingId));
+		SightSeeing sightSeeing = sightSeeingService.findOne(QSightSeeing.sightSeeing.sightSeeingId.eq(sightSeeingId).and(QSightSeeing.sightSeeing.isEnabled.isTrue()));
 		return buildSightSeeingDetailResponse(sightSeeing);
 	}
 
@@ -63,40 +69,40 @@ public class SightSeeingFacadeImpl implements SightSeeingFacade {
 
 	@Override
 	public Page<SightSeeingDetailResponse> findAllSightSeeing(Predicate predicate, Pageable pageable) {
-		return sightSeeingService.findAll(predicate, pageable).map(this::buildSightSeeingDetailResponse);
+		return sightSeeingService.findAll(ExpressionUtils.allOf(predicate,QSightSeeing.sightSeeing.isEnabled.isTrue()), pageable).map(this::buildSightSeeingDetailResponse);
 	}
 	
-	private SightSeeingDetailResponse buildSightSeeingDetailResponse(final SightSeeing review) {
+	private SightSeeingDetailResponse buildSightSeeingDetailResponse(final SightSeeing sightSeeing) {
 		SightSeeingDetailResponse response = new SightSeeingDetailResponse();
 		modelMapper.getConfiguration().setAmbiguityIgnored(Boolean.TRUE);
 		TypeMap<SightSeeing, SightSeeingDetailResponse> typeMap = modelMapper.typeMap(SightSeeing.class, SightSeeingDetailResponse.class);
-		typeMap.map(review, response);
-
+		typeMap.map(sightSeeing, response);
+		response.setReviewLst(reviewService.findAll(QReview.review1.sightSeeing.eq(sightSeeing), Pageable.unpaged()).getContent());
 		return response;
 	}
 	
 	private SightSeeing buildSightSeeing(final SightSeeingCreateRequest request) {
-		SightSeeing review = new SightSeeing();
+		SightSeeing sightSeeing = new SightSeeing();
 		modelMapper.getConfiguration().setAmbiguityIgnored(Boolean.TRUE);
 		final TypeMap<SightSeeingCreateRequest, SightSeeing> typeMap = modelMapper.typeMap(SightSeeingCreateRequest.class, SightSeeing.class);
 		typeMap.addMappings(mapper -> mapper.skip(SightSeeing::setSightSeeingId));
 		typeMap.addMappings(mapper -> mapper.skip(SightSeeing::setDateCreated));
 		typeMap.addMappings(mapper -> mapper.skip(SightSeeing::setLastUpdated));
-		typeMap.map(request, review);
-//        category.setImages(request.getImages().stream().map(Object::toString).collect(Collectors.joining(SEPARATOR)));
+		typeMap.map(request, sightSeeing);
+		sightSeeing.setImages(request.getImages().stream().map(Object::toString).collect(Collectors.joining(SEPARATOR)));
 
-		return review;
+		return sightSeeing;
 	}
 	
-	private SightSeeing buildSightSeeing(SightSeeing review, final SightSeeingUpdateRequest request) {
+	private SightSeeing buildSightSeeing(SightSeeing sightSeeing, final SightSeeingUpdateRequest request) {
 		modelMapper.getConfiguration().setAmbiguityIgnored(Boolean.TRUE);
 		TypeMap<SightSeeingUpdateRequest, SightSeeing> typeMap = modelMapper.typeMap(SightSeeingUpdateRequest.class, SightSeeing.class);
 		typeMap.addMappings(mapper -> mapper.skip(SightSeeing::setDateCreated));
 		typeMap.addMappings(mapper -> mapper.skip(SightSeeing::setLastUpdated));
-		typeMap.map(request, review);
-		// category.setImages(request.getImages().stream().map(Object::toString).collect(Collectors.joining(SEPARATOR)));
+		typeMap.map(request, sightSeeing);
+		sightSeeing.setImages(request.getImages().stream().map(Object::toString).collect(Collectors.joining(SEPARATOR)));
 
-		return review;
+		return sightSeeing;
 	}
 
 

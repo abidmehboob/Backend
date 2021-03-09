@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.alseyahat.app.feature.deal.repository.entity.Deal;
 import com.alseyahat.app.feature.hotel.dto.HotelCreateRequest;
 import com.alseyahat.app.feature.hotel.dto.HotelCreateResponse;
 import com.alseyahat.app.feature.hotel.dto.HotelDetailResponse;
 import com.alseyahat.app.feature.hotel.dto.HotelUpdateRequest;
 import com.alseyahat.app.feature.hotel.dto.HotelUpdateResponse;
 import com.alseyahat.app.feature.hotel.facade.HotelFacade;
+import com.alseyahat.app.feature.hotel.repository.entity.Hotel;
 import com.querydsl.core.types.Predicate;
 import lombok.AccessLevel;
 import io.swagger.annotations.Api;
@@ -55,7 +55,7 @@ public class HotelController {
 
 	    @GetMapping
 	    @ApiOperation(value = "Get all hotels", nickname = "getAllHotels", notes = "Get all hotels")
-	    public ResponseEntity<Page<HotelDetailResponse>> getAllHotels(@RequestParam Map<String, String> parameters, @QuerydslPredicate(root = Deal.class) Predicate predicate, final Pageable pageable) {
+	    public ResponseEntity<Page<HotelDetailResponse>> getAllHotels(@RequestParam Map<String, String> parameters, @QuerydslPredicate(root = Hotel.class) Predicate predicate, final Pageable pageable) {
 	         return ResponseEntity.ok(hotelFacade.findAllHotel(predicate, pageable));
 	    }
 

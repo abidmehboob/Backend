@@ -37,7 +37,34 @@ public class Deal implements Serializable {
   String description;
   
   @Column
+  String images;
+    
+  @Column
+  double dealAmount;
+ 
+  @Column
+  String hotelId;
+  
+  @Column
+  String sightSeeingId;
+  
+  @Column
+  String privateHiredId;
+  
+  @Column
   boolean isEnabled = Boolean.TRUE;
+  
+  @Column
+  Double dealAverageRating=3.0;
+  
+  @Column
+  boolean hotDeal =  Boolean.FALSE;
+
+  @Column
+  boolean newArrival =  Boolean.FALSE;
+
+  @Column
+  boolean advertised = Boolean.FALSE;
   
   @OneToMany(mappedBy = "deal", fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Review.class)
   List<Review> review;

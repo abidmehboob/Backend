@@ -1,15 +1,14 @@
 package com.alseyahat.app.feature.customer.repository.entity;
 
-//import com.planckly.shopping.feature.branch.repository.entity.Branch;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import com.alseyahat.app.feature.hotel.repository.entity.HotelBooking;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +16,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import java.util.Collection;
@@ -33,7 +32,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @Entity
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "customers", indexes = {@Index(name = "UQ_CUSTOMERS_PHONE_IDX", columnList = "phone", unique = true)})
+@Table(name = "customer", indexes = {@Index(name = "UQ_CUSTOMERS_PHONE_IDX", columnList = "phone", unique = true)})
 public class Customer implements UserDetails {
 
     static final long serialVersionUID = -787991492884005033L;
@@ -45,8 +44,6 @@ public class Customer implements UserDetails {
     String name;
 
     String email;
-
-    String fcmToken;
 
     @Column(nullable = false)
     String password;
@@ -70,6 +67,9 @@ public class Customer implements UserDetails {
     String deviceToken;
     
     @Column
+    String cnic;
+    
+    @Column
     String personalKey;
 
     @Column(nullable = true)
@@ -80,6 +80,15 @@ public class Customer implements UserDetails {
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<ShippingAddress> shippingAddress;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_type", referencedColumnName = "id")
+    CustomerType customerType;
+    
+    
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<HotelBooking> hotelBooking;
+   
 
 //    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name = "branch_id")

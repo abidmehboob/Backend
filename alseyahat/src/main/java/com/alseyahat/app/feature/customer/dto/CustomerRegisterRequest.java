@@ -21,19 +21,12 @@ public class CustomerRegisterRequest {
 //    @NotEmpty(message = "error.customer.name_required")
     String name;
 
-    
     @Email
     String email;
-
-    @NotEmpty
-    String fcmToken;
-
+ 
     String deviceType;
 
-    String channelId;
-
     String deviceModel;
-
     
     @Size(min = 9, max = 11)
     @Digits(fraction = 0, integer = 11)
@@ -42,11 +35,8 @@ public class CustomerRegisterRequest {
 
     String deviceId;
 
-    String deviceToken;
-    
     String personalKey;
-    
-    String tokenId;
+ 
 
     List<CustomerShippingAddressCreateRequest> shippingAddress = new ArrayList<>();
 }

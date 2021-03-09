@@ -1,6 +1,8 @@
 package com.alseyahat.app.feature.customer.facade.impl;
 
 import com.alseyahat.app.commons.AppUtils;
+import com.alseyahat.app.exception.ServiceException;
+import com.alseyahat.app.exception.constant.ErrorCodeEnum;
 import com.alseyahat.app.feature.customer.dto.CustomerDetailResponse;
 import com.alseyahat.app.feature.customer.dto.CustomerLoginRequest;
 import com.alseyahat.app.feature.customer.dto.CustomerRegisterRequest;
@@ -16,6 +18,8 @@ import com.alseyahat.app.feature.customer.repository.entity.QShippingAddress;
 import com.alseyahat.app.feature.customer.repository.entity.ShippingAddress;
 import com.alseyahat.app.feature.customer.service.CustomerService;
 import com.alseyahat.app.feature.customer.service.ShippingAddressService;
+import com.alseyahat.app.feature.employee.dto.ChangePasswordRequest;
+import com.alseyahat.app.feature.employee.dto.ForgotPasswordRequest;
 import com.alseyahat.app.security.SecurityConstant;
 import com.alseyahat.app.security.config.JwtConfigProperties;
 import com.querydsl.core.types.Predicate;
@@ -25,29 +29,30 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import static com.alseyahat.app.constant.RoleConstant.PERMISSION_DENIED;
+import static java.util.Optional.ofNullable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -59,7 +64,8 @@ public class CustomerFacadeImpl implements CustomerFacade {
 
     ModelMapper modelMapper;
 
-    MessageSource messageSource;
+//    MessageSource messageSource;
+    PasswordEncoder encoder;
 
     TokenEndpoint tokenEndpoint;
 
@@ -140,6 +146,42 @@ public class CustomerFacadeImpl implements CustomerFacade {
         final Customer updatedCustomer = customerService.save(build(customer, request));
         log.trace("customer updated with id [{}]", updatedCustomer.getCustomerId());
         return buildCustomerUpdateResponse(updatedCustomer);
+    }
+    
+    @Override
+    public void forgotPasswordEmail(final ForgotPasswordRequest request) {
+        ofNullable(customerService.findOne(QCustomer.customer.email.eq(request.getEmail())))
+                .ifPresent(customer -> {
+                    Map<String, Object> content = new HashMap<>();
+                    content.put("name", customer.getName());
+//                    EmailDto emailDto = new EmailDto();
+//                    emailDto.setContent(content);
+//                    emailDto.setFrom(messageSource.getMessage("employee.email.forgot_password.from", null, LocaleContextHolder.getLocale()));
+//                    emailDto.setTo(new String[]{request.getEmail()});
+//                    emailDto.setSubject(messageSource.getMessage("employee.email.forgot_password.subject", null, LocaleContextHolder.getLocale()));
+//                    notificationService.prepareAndSendMessage(emailDto, "email", Locale.forLanguageTag("en"), "/employee-forgot-password-email-tmpl.ftl");
+                    log.debug("Email sent to email [{}]", request.getEmail());
+                });
+    }
+    
+    @Override
+    public void changePassword(final ChangePasswordRequest request) {
+        log.trace("Updating password of employee with employee email [{}]", request.getEmail());
+        final String username = AppUtils.getUserNameFromAuthentication();
+        final Optional<Customer> loginCustomer = customerService.find_One(QCustomer.customer.email.eq(username).or(QCustomer.customer.phone.eq(username)));
+        
+        final Customer customer = customerService.findOne(QCustomer.customer.email.eq(request.getEmail()));
+        
+        if(!loginCustomer.get().getCustomerId().equals(customer.getCustomerId()))
+        	throw new ServiceException(ErrorCodeEnum.INVALID_REQUEST, PERMISSION_DENIED);
+        
+        if (BooleanUtils.isFalse(encoder.matches(request.getOldPassword(), customer.getPassword()))) {
+            log.debug("Old password does not match for email [{}]", request.getEmail());
+            throw new ServiceException(ErrorCodeEnum.ENTITY_NOT_FOUND, "Invalid old password");
+        }
+        customer.setPassword(encoder.encode(request.getNewPassword()));
+        customerService.saveWithRollback(customer);
+        log.trace("Password updated of employee with id [{}]", customer.getEmail());
     }
 
 //    private void sendCreateCustomerNotification(final String name, final String email) {
@@ -243,7 +285,7 @@ public class CustomerFacadeImpl implements CustomerFacade {
         customerLoginRequest.setPhone(request.getPhone());
         customerLoginRequest.setName(request.getName());
         customerLoginRequest.setPersonalKey(request.getPersonalKey());
-        customerLoginRequest.setFcmToken(request.getFcmToken());
+     
         return customerLoginRequest;
     }
 
@@ -256,32 +298,6 @@ public class CustomerFacadeImpl implements CustomerFacade {
         return params;
     }
 
-//    private boolean validateAcMob(CustomerRegisterRequest request) {
-//        GetVerifyTokenResponse getVerifyTokenResponse = new GetVerifyTokenResponse();
-//        try {
-//            log.trace("befor acmob validation  PersonalKey [{}]", request.getPersonalKey());
-//            getVerifyTokenResponse = acMobFacade.getVerifyToken(buildAcMobRequest(request));
-//            log.trace("After acmob validation  Token [{}]", getVerifyTokenResponse.getToken());
-//            if (StringUtils.isNotEmpty(getVerifyTokenResponse.getToken()))
-//                return true;
-//            else
-//                return false;
-//        } catch (Exception ex) {
-//            return false;
-//        }
-//
-//    }
-
-//    private GetVerifyTokenRequest buildAcMobRequest(CustomerRegisterRequest request) {
-//        GetVerifyTokenRequest getVerifyTokenRequest = new GetVerifyTokenRequest();
-//        getVerifyTokenRequest.setPhoneNumber(request.getPhone());
-//        getVerifyTokenRequest.setDeviceID(request.getDeviceId());
-//        getVerifyTokenRequest.setDeviceModel(request.getDeviceModel());
-//        getVerifyTokenRequest.setTokenID(request.getTokenId());
-//        getVerifyTokenRequest.setChannelID(NOTIFICATION_CHANNEL_ID_VALUE);
-//        getVerifyTokenRequest.setTransactionDateTime(LocalDateTime.now().format(DATE_TIME_FORMATTER));
-//        return getVerifyTokenRequest;
-//    }
 
     private CustomerUpdateRequest buildUpdate(final CustomerRegisterRequest request) {
         CustomerUpdateRequest customerUpdateRequest = new CustomerUpdateRequest();
@@ -289,7 +305,7 @@ public class CustomerFacadeImpl implements CustomerFacade {
         customerUpdateRequest.setEmail(request.getEmail());
         customerUpdateRequest.setPhoneNumber(request.getPhone());
         customerUpdateRequest.setName(request.getName());
-        customerUpdateRequest.setFcmToken(request.getFcmToken());
+
         return customerUpdateRequest;
     }
 

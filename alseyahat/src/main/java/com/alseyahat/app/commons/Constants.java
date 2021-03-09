@@ -20,9 +20,10 @@ public class Constants {
     public static final String REDIS_CHAT_CHANNEL = "eshopchat";
     public static final String REDIS_BASKET_CHANNEL = "eshoporder";
     public static final String REDIS_MOBILE_BASKET_CHANNEL = "mobileeshoporder";
-    public static final String STORE_IMAGE = "STORE_IMAGE";
-    public static final String CHAT_IMAGE = "CHAT_IMAGE";
-    public static final String BRANCH_IMAGE = "BRANCH_IMAGE";
+    public static final String HOTEL_IMAGE = "HOTEL_IMAGE";
+    public static final String SIGHT_SEEING_IMAGE = "SIGHT_SEEING_IMAGE";
+    public static final String DEAL_IMAGE = "DEAL_IMAGE";
+    public static final String PRIVATE_HIRED_IMAGE = "PRIVATE_HIRED_IMAGE";
     public static final String ITEM_IMAGE = "ITEM_IMAGE";
     public static final String STORE_LOGO_IMAGE = "STORE_LOGO_IMAGE";
     public static final String CATEGORY_IMAGE = "CATEGORY_IMAGE";

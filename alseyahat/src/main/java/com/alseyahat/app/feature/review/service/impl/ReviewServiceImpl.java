@@ -9,7 +9,6 @@ import com.alseyahat.app.exception.constant.ErrorCodeEnum;
 import com.alseyahat.app.feature.review.repository.ReviewRepository;
 import com.alseyahat.app.feature.review.repository.entity.Review;
 import com.alseyahat.app.feature.review.service.ReviewService;
-import com.alseyahat.app.feature.sightSeeing.repository.SightSeeingRepository;
 import com.querydsl.core.types.Predicate;
 
 import lombok.AccessLevel;

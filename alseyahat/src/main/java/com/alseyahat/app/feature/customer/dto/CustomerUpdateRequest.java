@@ -21,9 +21,6 @@ public class CustomerUpdateRequest {
     @NotEmpty
     String email;
 
-    @NotEmpty
-    String fcmToken;
-
     String deviceType;
 
     String channelId;
@@ -33,8 +30,11 @@ public class CustomerUpdateRequest {
     String phoneNumber;
 
     String deviceId;
-
-    String deviceToken;
+    
+    String cnic;
+    
+    String password;
+    
 
     List<ShippingAddressUpdateRequest> shippingAddress = new ArrayList<>();
 

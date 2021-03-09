@@ -5,6 +5,8 @@ import com.alseyahat.app.feature.customer.dto.CustomerLoginRequest;
 import com.alseyahat.app.feature.customer.dto.CustomerRegisterRequest;
 import com.alseyahat.app.feature.customer.dto.CustomerUpdateRequest;
 import com.alseyahat.app.feature.customer.dto.CustomerUpdateResponse;
+import com.alseyahat.app.feature.employee.dto.ChangePasswordRequest;
+import com.alseyahat.app.feature.employee.dto.ForgotPasswordRequest;
 import com.querydsl.core.types.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,5 +29,9 @@ public interface CustomerFacade {
     CustomerUpdateResponse updateCustomer(final String customerId, final CustomerUpdateRequest request);
     
     CustomerDetailResponse findCustomerDetail();
+    
+    void forgotPasswordEmail(final ForgotPasswordRequest request);
+
+    void changePassword(final ChangePasswordRequest request);
 
 }
